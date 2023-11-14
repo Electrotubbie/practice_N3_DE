@@ -30,15 +30,15 @@ def get_page_data(html_page, file_name):
 
 
 def analyse_data(dataset):
-    # сортировка по полю year в порядке убывания 
-    # и фильтрация датасета по значениям поля title, которые содержат такие названия как ['micron', 'seagate', 'sandisk']
+    # сортировка по полю price в порядке убывания 
+    # и фильтрация датасета по значениям поля title, по содержимому ['micron', 'seagate', 'sandisk']
     handled_dataset = dataset.copy()
     handled_dataset = sorted(handled_dataset, key=lambda x: x['price'], reverse=True)
     filter_phrases = ['micron', 'seagate', 'sandisk']
     filtered_dataset = list(filter(lambda x: max([phrase in x['title'].lower() for phrase in filter_phrases]), handled_dataset))
     with open(f'{TASK_PATH}handled_dataset.json', 'w', encoding='UTF-8') as f:
         json.dump(filtered_dataset, f)
-
+    # анализ числовой колонки 'bonus'
     bonus_column = np.array([row['bonus'] for row in dataset])
     nums_stats = {
         'count': int(len(bonus_column)),
@@ -48,6 +48,7 @@ def analyse_data(dataset):
         'std': float(bonus_column.std()),
         'sum': float(sum(bonus_column))
     }
+    # анализ текстовой колонки 'matrix' и вывод частоты повторения значений в порядке возрастания
     matrix_column = [row['params']['matrix'] for row in dataset if 'matrix' in row['params'].keys()]
     labels_stats = {
         label: matrix_column.count(label)
@@ -63,11 +64,13 @@ def analyse_data(dataset):
 
 def main():
     dataset = list()
+    # считывание информации с файлов
     for file in os.scandir(PAGES_PATH):
         with open(f'{PAGES_PATH}{file.name}', 'r', encoding='UTF-8') as f:
             html_page = f.read() 
         page_data = get_page_data(html_page, file.name) # сбор данных из страницы
         dataset.extend(page_data) # добавление собранных со страницы данных
+    # запись считанных данных
     with open(f'{TASK_PATH}dataset.json', 'w', encoding='UTF-8') as f:
         json.dump(dataset, f)
     analyse_data(dataset)
