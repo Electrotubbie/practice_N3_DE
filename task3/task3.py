@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-import pandas as pd
 import numpy as np
 import json
 import os
@@ -23,7 +22,7 @@ def analyse_data(dataset):
     filtered_dataset = list(filter((lambda x: float(x['radius']) > 5 * 10**8), handled_dataset))
     with open(f'{TASK_PATH}handled_dataset.json', 'w', encoding='UTF-8') as f:
         json.dump(filtered_dataset, f)
-    # анализ числовой колонки 'rotation'
+    # анализ числовой колонки 'radius'
     radius_column = np.array([float(row['radius']) for row in dataset])
     nums_stats = {
         'count': int(len(radius_column)),
@@ -53,8 +52,8 @@ def main():
     for file in os.scandir(PAGES_PATH):
         with open(f'{PAGES_PATH}{file.name}', 'r', encoding='UTF-8') as f:
             xml_data = f.read() 
-        file_data = get_page_data(xml_data)
-        file_data['file_name'] = file.name # сбор данных из страницы
+        file_data = get_page_data(xml_data) # сбор данных из страницы
+        file_data['file_name'] = file.name 
         dataset.append(file_data) # добавление собранных со страницы данных
     # запись считанных данных
     with open(f'{TASK_PATH}dataset.json', 'w', encoding='UTF-8') as f:
