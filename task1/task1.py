@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import pandas as pd
 import os
-import regex as re
+import re
 import json
 
 TASK_PATH = './task1/'

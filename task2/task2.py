@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import os
-import regex as re
+import re
 import json
 import numpy as np
 
