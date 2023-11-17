@@ -1,3 +1,9 @@
+'''
+В данной работе реализован парсер списка новостей из киргизского новостного ресурса.
+Реализовано получение максимально допустимой страницы.
+Перебор и заполнение датасета информацией с каждой страницы.
+'''
+
 from bs4 import BeautifulSoup
 import pandas as pd
 import time
@@ -19,7 +25,7 @@ def get_pages_num(link: str) -> int:
     main_news_page = get_response(link)
     if main_news_page:
         soup = BeautifulSoup(main_news_page.text, 'lxml')
-        max_page_num = max([int(tag.text) for tag in soup.find_all("a", class_="page-link") if tag.text.isdigit()])
+        max_page_num = max([int(tag.text) for tag in soup.find_all("a", class_="page-link") if tag.text.isdigit()]) # поиск максимального числа в плашке выбора страницы
         return max_page_num
     else:
         return 0
@@ -34,16 +40,17 @@ def get_new_list_on_page(page_id: int) -> list[BeautifulSoup]:
     
 def get_new_data(new):
     # парсинг информации с заголовком, просмотрами, ссылкой
-    title_info = new.find("div", class_=re.compile("lh-\dp e_\d m_\d")).find("a", class_="text-decoration-none")
-    title_strings = [s.strip() for s in title_info.strings if s not in ('\n', '(фото)', '(видео)')]
-    new_views = int(title_strings[-2])
-    new_title = ' '.join(title_strings[:-2])
-    new_link =  new_link = title_info.get('href')
+    title_info = new.find("div", class_=re.compile("lh-\dp e_\d m_\d")).find("a", class_="text-decoration-none") # поиск тега, содержащего заголовок, количество просмотров и ссылку на новость
+    title_strings = [s.strip() for s in title_info.strings if s not in ('\n', '(фото)', '(видео)')] # считывание всех строк предыдущего тега из итератора strings
+    new_views = int(title_strings[-2]) # считывание количества просмотров для новости из списка
+    new_title = ' '.join(title_strings[:-2]) # считывание заголовка новости
+    new_link = title_info.get('href') # считывание ссылки на новость
     # парсинг информации с категорией, датой, временем
-    category_info = new.find("div", class_="cat-color")
-    category_strings = [s for s in category_info.strings if s not in ['\n', ' ', '|']]
-    new_category = category_strings[1]
-    [new_public_date, new_public_time] = category_strings[0].split(' ') # тут необходимо поменять местами дату и время
+    category_info = new.find("div", class_="cat-color") # считывание тега, содержащего дату публикации, время, а также наименование категории новости
+    category_strings = [s for s in category_info.strings if s not in ['\n', ' ', '|']] # считывание всех строк предыдущего тега из итератора strings
+    new_category = category_strings[1] 
+    [new_public_date, new_public_time] = category_strings[0].split(' ') # в данной строке я перепутал дату и время, оставил как есть, чтоб совпадало с длительно спарсенным датасетом 
+    # создание словаря для записи в датасет
     new_info = {
             'new_title': new_title,
             'new_text': pd.NA,
@@ -61,12 +68,12 @@ def main():
     # получение максимального числа страниц на ресурсе
     max_page = get_pages_num(news_link)
     # перебор страниц и получение с них информации
-    # for page_id in tqdm(range(1, max_page + 1, 1)): парсил с этой строкой, когда надоело нажал Ctrl+C
+    # for page_id in tqdm(range(1, max_page + 1, 1)): # парсил с этой строкой до достижения примерно подоходящего размера файла
     for page_id in tqdm(range(1, 91, 1)): # оставил эту строку, чтоб меньше ждать
         # пауза для того, чтоб не отправлять часто запросы
         time.sleep(T_PAUSE)
         news_list = list()
-        # любым путём получаем список новосте из страницы
+        # любым путём получаем список новостей из страницы
         while not news_list:
             try:
                 news_list = get_new_list_on_page(page_id)
@@ -88,6 +95,9 @@ def main():
             main_df.to_json(f'{TASK_PATH}dataset.json', orient='records')
     # результирующее сохранение датасета, до которого я так и не добрался
     main_df.to_json(f'{TASK_PATH}dataset.json', orient='records')
+
+# анализ датасета выполнен в отдельном файле analyse_data.py
+# в данном файле выполнен парсинг
 
 if __name__ == '__main__':
     main()
