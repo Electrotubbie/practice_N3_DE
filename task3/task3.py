@@ -21,7 +21,7 @@ def analyse_data(dataset):
     handled_dataset = sorted(handled_dataset, key=lambda x: float(x['distance'].split(' million km')[0]), reverse=False)
     filtered_dataset = list(filter((lambda x: float(x['radius']) > 5 * 10**8), handled_dataset))
     with open(f'{TASK_PATH}handled_dataset.json', 'w', encoding='UTF-8') as f:
-        json.dump(filtered_dataset, f)
+        json.dump(filtered_dataset, f, ensure_ascii=False)
     # анализ числовой колонки 'radius'
     radius_column = np.array([float(row['radius']) for row in dataset])
     nums_stats = {
@@ -44,7 +44,7 @@ def analyse_data(dataset):
         'labels_constellation': labels_stats
     }
     with open(f'{TASK_PATH}stats.json', 'w', encoding='UTF-8') as f:
-        json.dump(stats, f)
+        json.dump(stats, f, ensure_ascii=False)
 
 def main():
     dataset = list()
@@ -57,7 +57,7 @@ def main():
         dataset.append(file_data) # добавление собранных со страницы данных
     # запись считанных данных
     with open(f'{TASK_PATH}dataset.json', 'w', encoding='UTF-8') as f:
-        json.dump(dataset, f)
+        json.dump(dataset, f, ensure_ascii=False)
     analyse_data(dataset)
 
 if __name__ == '__main__':

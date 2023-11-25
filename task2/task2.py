@@ -37,7 +37,7 @@ def analyse_data(dataset):
     filter_phrases = ['micron', 'seagate', 'sandisk']
     filtered_dataset = list(filter(lambda x: max([phrase in x['title'].lower() for phrase in filter_phrases]), handled_dataset))
     with open(f'{TASK_PATH}handled_dataset.json', 'w', encoding='UTF-8') as f:
-        json.dump(filtered_dataset, f)
+        json.dump(filtered_dataset, f, ensure_ascii=False)
     # анализ числовой колонки 'bonus'
     bonus_column = np.array([row['bonus'] for row in dataset])
     nums_stats = {
@@ -60,7 +60,7 @@ def analyse_data(dataset):
         'labels_matrix': labels_stats
     }
     with open(f'{TASK_PATH}stats.json', 'w', encoding='UTF-8') as f:
-        json.dump(stats, f)
+        json.dump(stats, f, ensure_ascii=False)
 
 def main():
     dataset = list()
@@ -72,7 +72,7 @@ def main():
         dataset.extend(page_data) # добавление собранных со страницы данных
     # запись считанных данных
     with open(f'{TASK_PATH}dataset.json', 'w', encoding='UTF-8') as f:
-        json.dump(dataset, f)
+        json.dump(dataset, f, ensure_ascii=False)
     analyse_data(dataset)
 
 if __name__ == '__main__':

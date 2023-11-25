@@ -31,7 +31,7 @@ def analyse_data(df):
     handled_df = df.copy()
     handled_df = handled_df.sort_values('year', ascending=False)
     handled_df = handled_df[handled_df['category'].isin(['роман', 'триллер', 'приключения'])]
-    handled_df.to_json(f'{TASK_PATH}handled_dataset.json', orient='records') # запись обработанных данных
+    handled_df.to_json(f'{TASK_PATH}handled_dataset.json', orient='records', force_ascii=False) # запись обработанных данных
     # анализ числового столбца ratio и текстового столбца author
     nums_stats_df = df.ratio.describe().loc[['count', 'mean', 'min', 'max', 'std']]
     nums_stats_df['sum'] = sum(df.ratio)
@@ -45,7 +45,7 @@ def analyse_data(df):
         'labels': labels_stats
     }
     with open(f'{TASK_PATH}stats.json', 'w', encoding='UTF-8') as f:
-        json.dump(stats, f)
+        json.dump(stats, f, ensure_ascii=False)
 
 def main():
     df_cols = ['html_name', 'category', 'name', 'author', 'volume', 'year', 'ISBN', 'description', 'image_link', 'ratio', 'views']
@@ -56,7 +56,7 @@ def main():
         page_data = get_page_data(html_page) # сбор данных из страницы
         page_data['html_name'] = file.name # добавление имени файла с данными в данные страницы
         df.loc[len(df.index)] = page_data # добавление собранных со страницы данных
-    df.to_json(f'{TASK_PATH}dataset.json', orient='records') # запись исходно собранных данных
+    df.to_json(f'{TASK_PATH}dataset.json', orient='records', force_ascii=False) # запись исходно собранных данных
     analyse_data(df)
 
 if __name__ == '__main__':

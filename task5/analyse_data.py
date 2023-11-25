@@ -21,7 +21,7 @@ def analyse_data(dataset):
     handled_df = handled_df.sort_values(by='new_public_date')
     handled_df = handled_df[handled_df['new_category'] == 'Коом жана турмуш']
     # сохранение полученного датасета
-    handled_df.to_json(f'{TASK_PATH}handled_dataset.json', orient='records')
+    handled_df.to_json(f'{TASK_PATH}handled_dataset.json', orient='records', force_ascii=False)
     # анализ числового столбца new_views и текстового столбца new_category
     nums_stats_df = df_to_analyse.new_views.describe().loc[['count', 'mean', 'min', 'max', 'std']]
     nums_stats_df['sum'] = sum(df_to_analyse.new_views)
@@ -29,13 +29,13 @@ def analyse_data(dataset):
     nums_stats['column_name'] = nums_stats_df.name
     labels_stats_df = df_to_analyse.new_category.value_counts()
     labels_stats = labels_stats_df.to_dict()
-    labels_stats['column_name'] = labels_stats_df.name
+    labels_stats['column_name'] = 'new_category'
     stats = {
         'nums': nums_stats,
         'labels': labels_stats
     }
     with open(f'{TASK_PATH}stats.json', 'w', encoding='UTF-8') as f:
-        json.dump(stats, f)
+        json.dump(stats, f, ensure_ascii=False)
 
-df = pd.read_json(f'{TASK_PATH}dataset.json')
+df = pd.read_json(f'{TASK_PATH}dataset.json', encoding='UTF-8')
 analyse_data(df)

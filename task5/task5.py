@@ -92,9 +92,9 @@ def main():
                 continue
         # сохранение датасета каждые 30 считанных страниц
         if page_id%30 == 0:
-            main_df.to_json(f'{TASK_PATH}dataset.json', orient='records')
+            main_df.to_json(f'{TASK_PATH}dataset.json', orient='records', force_ascii=False)
     # результирующее сохранение датасета, до которого я так и не добрался
-    main_df.to_json(f'{TASK_PATH}dataset.json', orient='records')
+    main_df.to_json(f'{TASK_PATH}dataset.json', orient='records', force_ascii=False)
 
 # анализ датасета выполнен в отдельном файле analyse_data.py
 # в данном файле выполнен парсинг
